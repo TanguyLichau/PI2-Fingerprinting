@@ -25,3 +25,9 @@ python cli.py --tls 1.2
 ```bash
 python cli.py --headers headers.json
 ```
+
+- Utiliser selenium
+
+```bash
+python cli.py --selenium true
+```
