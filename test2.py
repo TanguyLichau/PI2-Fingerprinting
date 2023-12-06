@@ -22,7 +22,7 @@ class CustomHTTPAdapter(HTTPAdapter):
         self.poolmanager = PoolManager(*pool_args, ssl_context=ctx, **pool_kwargs)
 
 
-CIPHERS = 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-CBC-SHA384'
+CIPHERS = 'ECDHE-RSA-AES256-CBC-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384'
 headers = {}
 
 parser = argparse.ArgumentParser()
@@ -60,44 +60,38 @@ if args.headers:
 
 if args.selenium == "true" or args.selenium =="True":
   options = webdriver.ChromeOptions()
+  options.add_argument("start-maximized")
+  options.add_experimental_option('excludeSwitches', ['enable-logging', 'enable-automation'])
+  options.add_experimental_option('useAutomationExtension', False)
+  options.add_argument('--disable-blink-features=AutomationControlled')
+  options.add_argument('--no-sandbox')
+
+  options.add_argument("user-data-dir=C:\\Users\\Tanguy\\AppData\\Local\\Google\\Chrome\\User Data\\Default")
   #run in headless mode
   #options.add_argument("--headless")
   '''
-  # disable the AutomationControlled feature of Blink rendering engine
-  options.add_argument('--disable-blink-features=AutomationControlled')
-  
-  # disable pop-up blocking
-  options.add_argument('--disable-popup-blocking')
-  
-  # start the browser window in maximized mode
-  options.add_argument('--start-maximized')
-  
   # disable extensions
   options.add_argument('--disable-extensions')
-  
-  # disable sandbox mode
-  options.add_argument('--no-sandbox')
   
   # disable shared memory usage
   options.add_argument('--disable-dev-shm-usage')
   '''
   driver = webdriver.Chrome(options=options)
-  driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: function() {return false}})")
+  driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: function() {return undefined}})")
   stealth(driver,
-          languages=["en-US", "en"],
+          languages=["fr-FR","fr","en-US", "en"],
           vendor="Google Inc.",
           platform="Win32",
-          webgl_vendor="Intel Inc.",
-          renderer="Intel Iris OpenGL Engine",
+          webgl_vendor="Google Inc. (NVIDIA)",
+          renderer="ANGLE (NVIDIA, NVIDIA GeForce RTX 2070 SUPER (0x00001E84) Direct3D11 vs_5_0 ps_5_0, D3D11)",
           fix_hairline=True,
         )
   driver.get(args.url)
-  while driver.execute_script("return document.readyState") != "complete":
-    pass
   #driver.save_screenshot(f"C:/Users/Tanguy/Desktop/PI2/Cli/Screenshots/{args.url}.png")
   #driver.save_screenshot("test.png")
-  
+  time.sleep(20)
   driver.quit()
+  
 else:
   session = requests.Session()
 
