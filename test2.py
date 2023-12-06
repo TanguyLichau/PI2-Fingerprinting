@@ -60,15 +60,23 @@ if args.headers:
 
 if args.selenium == "true" or args.selenium =="True":
   options = webdriver.ChromeOptions()
+  
   options.add_argument("start-maximized")
   options.add_experimental_option('excludeSwitches', ['enable-logging', 'enable-automation'])
   options.add_experimental_option('useAutomationExtension', False)
   options.add_argument('--disable-blink-features=AutomationControlled')
   options.add_argument('--no-sandbox')
+  options.add_argument('--disable-gpu')
+  options.add_argument('--disable-site-isolation-trials')
+  options.add_argument('--disable-dev-shm-usage')
+  options.add_argument('--disable-extensions')
+  
 
-  options.add_argument("user-data-dir=C:\\Users\\Tanguy\\AppData\\Local\\Google\\Chrome\\User Data\\Default")
+
+
+  #options.add_argument("user-data-dir=C:\\Users\\Tanguy\\AppData\\Local\\Google\\Chrome\\User Data\\Default")
   #run in headless mode
-  #options.add_argument("--headless")
+  options.add_argument("--headless=new")
   '''
   # disable extensions
   options.add_argument('--disable-extensions')
@@ -88,7 +96,7 @@ if args.selenium == "true" or args.selenium =="True":
         )
   driver.get(args.url)
   #driver.save_screenshot(f"C:/Users/Tanguy/Desktop/PI2/Cli/Screenshots/{args.url}.png")
-  #driver.save_screenshot("test.png")
+  driver.save_screenshot("test.png")
   time.sleep(20)
   driver.quit()
   
