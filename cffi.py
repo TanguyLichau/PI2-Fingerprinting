@@ -6,6 +6,8 @@ import requests as r_basic
 BROWSER_LIST = ["chrome100", "chrome101", "chrome104", "chrome107", "chrome110"]
 
 def isPageBlocked(text):
+  if len(text) < 10000:
+    return True
   indicators = [
       "checking your browser",
       "DDoS protection by Cloudflare",
@@ -15,7 +17,15 @@ def isPageBlocked(text):
       "Access to this page has been denied",
       "Checking your browser before accessing",
       "Powered by DataDome",
-      "waf"
+      "waf",
+      "BotDetect",
+      "SoftBlock",
+      "HardBlock",
+      "recaptcha-script",
+      "recaptcha_script",
+      "arkose-challenge",
+      "arkose_challenge",
+      "arkose"
   ]
 
   if any(indicator.lower() in text.lower() for indicator in indicators):
@@ -24,6 +34,10 @@ def isPageBlocked(text):
 
 def record_result(file, result):
   with open(file, "a") as result_file:
+    result_file.write(result)
+
+def write_logs(filename, result):
+  with open(filename, "w", encoding="utf-8") as result_file:
     result_file.write(result)
 
 if __name__ == "__main__":
@@ -58,14 +72,16 @@ if __name__ == "__main__":
 
     # Requete simple
     r = r_basic.get(url)
-    print(r.text)
+    write_logs("logs.txt", r.text)
+    #print(r.text)
+
     if r.status_code == 200 and not isPageBlocked(r.text):
       result_string += " 1" 
       successful_requests += 1
     else:
       result_string += " 0" 
       blocked_requests += 1
-    
+    '''
     # Requete simple + proxy faible
     r = r_basic.get(url, proxies={"http": "", "https": ""})
     if r.status_code == 200 and not isPageBlocked(r.text):
@@ -74,7 +90,7 @@ if __name__ == "__main__":
     else:
       result_string += " 0" 
       blocked_requests += 1
-
+    
     # Requete simple + proxy fort
     r = r_basic.get(url, proxies={"http": "", "https": ""})
     if r.status_code == 200 and not isPageBlocked(r.text):
@@ -83,17 +99,17 @@ if __name__ == "__main__":
     else:
       result_string += " 0" 
       blocked_requests += 1
-   
+   '''
     # Requete avec curl_cffi
     r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST))
-    print(r.text)
+    write_logs("logs2.txt", r.text)
     if r.status_code == 200 and not isPageBlocked(r.text):
       result_string += " 1" 
       successful_requests += 1
     else:
       result_string += " 0" 
       blocked_requests += 1
-    
+    '''
     # Requete avec curl_cffi + proxy faible
     r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST), proxies={"http": "", "https": ""})
     if r.status_code == 200 and not isPageBlocked(r.text):
@@ -111,7 +127,7 @@ if __name__ == "__main__":
     else:
       result_string += " 0" 
       blocked_requests += 1
-
+    '''
     record_result(result_file_name, f"{result_string}\n")
 
   print("Statistics:")
