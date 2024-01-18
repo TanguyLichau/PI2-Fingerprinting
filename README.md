@@ -2,32 +2,14 @@
 
 ### Arguments
 
-- Ajouter une url
+- Lancer le requetage d'un seul site
 
 ```bash
-python cli.py --url test.com
+python cffi.py --url test_url.com
 ```
 
-- Ajouter un proxy https
+- Lancer le requetage sur une liste de site
 
 ```bash
-python cli.py --proxy 10.0.0.1
-```
-
-- Choisir la version TLS (1.1 / 1.2 / 1.3)
-
-```bash
-python cli.py --tls 1.2
-```
-
-- Ajouter une liste de headers sous format JSON
-
-```bash
-python cli.py --headers headers.json
-```
-
-- Utiliser selenium
-
-```bash
-python cli.py --selenium true
+python cffi.py --urls url_list.txt
 ```
