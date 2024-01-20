@@ -17,7 +17,6 @@ def isPageBlocked(text):
       "Access to this page has been denied",
       "Checking your browser before accessing",
       "Powered by DataDome",
-      "waf",
       "BotDetect",
       "SoftBlock",
       "HardBlock",
@@ -67,13 +66,13 @@ if __name__ == "__main__":
   else:
     URL_LIST.append(args.url)
 
+  print("Starting the requests\n")
   for url in URL_LIST:
     result_string = f"{url} :"
 
     # Requete simple
     r = r_basic.get(url)
-    write_logs("logs.txt", r.text)
-    #print(r.text)
+    write_logs("./logs/logs.txt", r.text)
 
     if r.status_code == 200 and not isPageBlocked(r.text):
       result_string += " 1" 
@@ -102,7 +101,7 @@ if __name__ == "__main__":
    '''
     # Requete avec curl_cffi
     r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST))
-    write_logs("logs2.txt", r.text)
+    write_logs("./logs/logs2.txt", r.text)
     if r.status_code == 200 and not isPageBlocked(r.text):
       result_string += " 1" 
       successful_requests += 1
@@ -128,9 +127,10 @@ if __name__ == "__main__":
       result_string += " 0" 
       blocked_requests += 1
     '''
+    print(f"{url} done")
     record_result(result_file_name, f"{result_string}\n")
 
-  print("Statistics:")
+  print("\nStatistics:")
   print(f"Total requests: {successful_requests + blocked_requests}")
   print(f"Successful requests: {successful_requests}")
   print(f"Blocked requests: {blocked_requests}")
