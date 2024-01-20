@@ -1,7 +1,11 @@
 import argparse
 import random
+import os
 from curl_cffi import requests as r_cffi
 import requests as r_basic
+from dotenv import load_dotenv
+import time
+import urllib3
 
 BROWSER_LIST = ["chrome100", "chrome101", "chrome104", "chrome107", "chrome110"]
 
@@ -49,6 +53,8 @@ if __name__ == "__main__":
     print("No target url")
     exit()
 
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+  load_dotenv()
   URL_LIST = []
   PROXIES = []
   result_file_name = "request_results.txt"
@@ -65,72 +71,116 @@ if __name__ == "__main__":
           exit()
   else:
     URL_LIST.append(args.url)
-
+  
   print("Starting the requests\n")
   for url in URL_LIST:
     result_string = f"{url} :"
-
+    
     # Requete simple
-    r = r_basic.get(url)
-    write_logs("./logs/logs.txt", r.text)
-
-    if r.status_code == 200 and not isPageBlocked(r.text):
-      result_string += " 1" 
-      successful_requests += 1
-    else:
-      result_string += " 0" 
+    try:
+      r = r_basic.get(url)
+      print(1)
+      write_logs("./logs/simple.txt", r.text)
+      if r.status_code == 200 and not isPageBlocked(r.text):
+        result_string += " 1" 
+        successful_requests += 1
+      else:
+        result_string += " 0" 
+        blocked_requests += 1
+    except Exception as e:
+      print(e)
+      result_string += " X" 
       blocked_requests += 1
-    '''
+    
     # Requete simple + proxy faible
-    r = r_basic.get(url, proxies={"http": "", "https": ""})
-    if r.status_code == 200 and not isPageBlocked(r.text):
-      result_string += " 1" 
-      successful_requests += 1
-    else:
-      result_string += " 0" 
+    try:
+      r = r_basic.get(url, proxies={"http": os.getenv("WEAK_PROXY_URL"), "https": os.getenv("WEAK_PROXY_URL")})
+      write_logs("./logs/simple_weak_proxy.txt", r.text)
+      print(2)
+      if r.status_code == 200 and not isPageBlocked(r.text):
+        result_string += " 1" 
+        successful_requests += 1
+      else:
+        result_string += " 0" 
+        blocked_requests += 1
+    except Exception as e:
+      print(e)
+      result_string += " X" 
       blocked_requests += 1
     
     # Requete simple + proxy fort
-    r = r_basic.get(url, proxies={"http": "", "https": ""})
-    if r.status_code == 200 and not isPageBlocked(r.text):
-      result_string += " 1" 
-      successful_requests += 1
-    else:
-      result_string += " 0" 
+    try:
+      r = r_basic.get(url, proxies={"http": os.getenv("STRONG_PROXY_URL"), "https": os.getenv("STRONG_PROXY_URL")}, verify=False)
+      write_logs("./logs/simple_strong_proxy.txt", r.text)
+      print(3)
+      if r.status_code == 200 and not isPageBlocked(r.text):
+        result_string += " 1" 
+        successful_requests += 1
+      else:
+        result_string += " 0" 
+        blocked_requests += 1
+    except Exception as e:
+      print(e)
+      result_string += " X" 
       blocked_requests += 1
-   '''
+    
     # Requete avec curl_cffi
-    r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST))
-    write_logs("./logs/logs2.txt", r.text)
-    if r.status_code == 200 and not isPageBlocked(r.text):
-      result_string += " 1" 
-      successful_requests += 1
-    else:
-      result_string += " 0" 
+    try:
+      r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST))
+      print(4)
+      write_logs("./logs/cffi.txt", r.text)
+      if r.status_code == 200 and not isPageBlocked(r.text):
+        result_string += " 1" 
+        successful_requests += 1
+      else:
+        result_string += " 0" 
+        blocked_requests += 1
+    except Exception as e:
+      print(e)
+      result_string += " X" 
       blocked_requests += 1
-    '''
+    
     # Requete avec curl_cffi + proxy faible
-    r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST), proxies={"http": "", "https": ""})
-    if r.status_code == 200 and not isPageBlocked(r.text):
-      result_string += " 1" 
-      successful_requests += 1
-    else:
-      result_string += " 0" 
+    try:
+      r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST), proxies={"http": os.getenv("WEAK_PROXY_URL"), "https": os.getenv("WEAK_PROXY_URL")})
+      write_logs("./logs/cffi_weak_proxy.txt", r.text)
+      print(5)
+      if r.status_code == 200 and not isPageBlocked(r.text):
+        result_string += " 1" 
+        successful_requests += 1
+      else:
+        result_string += " 0" 
+        blocked_requests += 1
+    except Exception as e:
+      print(e)
+      result_string += " X" 
       blocked_requests += 1
-
+    
     # Requete avec curl_cffi + proxy fort
-    r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST), proxies={"http": "", "https": ""})
-    if r.status_code == 200 and not isPageBlocked(r.text):
-      result_string += " 1" 
-      successful_requests += 1
-    else:
-      result_string += " 0" 
+    try:
+      r = r_cffi.get(url, impersonate=random.choice(BROWSER_LIST), proxies={"http": os.getenv("STRONG_PROXY_URL"), "https": os.getenv("STRONG_PROXY_URL")}, verify=False)
+      write_logs("./logs/cffi_strong_proxy.txt", r.text)
+      print(6)
+      if r.status_code == 200 and not isPageBlocked(r.text):
+        result_string += " 1" 
+        successful_requests += 1
+      else:
+        result_string += " 0" 
+        blocked_requests += 1
+    except Exception as e:
+      print(e)
+      result_string += " X" 
       blocked_requests += 1
-    '''
+    
     print(f"{url} done")
     record_result(result_file_name, f"{result_string}\n")
-
+    time.sleep(5)
+    
   print("\nStatistics:")
+  record_result(result_file_name, "\nStatistics:\n")
   print(f"Total requests: {successful_requests + blocked_requests}")
+  record_result(result_file_name, f"Total requests: {successful_requests + blocked_requests}\n")
   print(f"Successful requests: {successful_requests}")
+  record_result(result_file_name, f"Successful requests: {successful_requests}\n")
   print(f"Blocked requests: {blocked_requests}")
+  record_result(result_file_name, f"Blocked requests: {blocked_requests}\n")
