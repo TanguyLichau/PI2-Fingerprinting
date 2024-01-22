@@ -80,6 +80,12 @@ python cffi.py --urls "url_list.txt"
 - Successful requests: 91
 - Blocked requests: 65
 
+### Areas of improvement
+
+- Modify the function for detecting blocked requests
+- Add a web client that allows the execution of javascript (curl package not strong enough for cloudflare)
+- Implement AI for solving easy captchas
+
 ### Disclaimer
 
 This project is for educational purposes only. Ensure compliance with ethical guidelines and legal regulations when conducting web fingerprinting activities.
